@@ -19,9 +19,10 @@ interface Props {
   state: GameState
   onStateChange: (state: GameState) => void
   onEndGame: () => void
+  onUndo?: () => void
 }
 
-export function GameBoard({ state, onStateChange, onEndGame }: Props) {
+export function GameBoard({ state, onStateChange, onEndGame, onUndo }: Props) {
   const [modal, setModal] = useState<Modal>(null)
   const { players, round, kyoutaku, dealerIndex } = state
   const rankings = getRankings(players)
@@ -107,6 +108,14 @@ export function GameBoard({ state, onStateChange, onEndGame }: Props) {
           >
             点数表
           </button>
+          {onUndo && (
+            <button
+              onClick={onUndo}
+              className="text-yellow-300 hover:text-yellow-100 text-sm border border-yellow-400/50 rounded-lg px-3 py-1 transition-colors"
+            >
+              やり直し
+            </button>
+          )}
           <button
             onClick={onEndGame}
             className="text-white/60 hover:text-white text-sm border border-white/30 rounded-lg px-3 py-1 transition-colors"

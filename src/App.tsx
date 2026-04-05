@@ -7,10 +7,23 @@ import { GameEndScreen } from './components/GameEndScreen'
 
 export default function App() {
   const [state, setState] = useState<GameState>(() => loadState() ?? createInitialState())
+  const [prevState, setPrevState] = useState<GameState | null>(null)
 
   useEffect(() => {
     saveState(state)
   }, [state])
+
+  const handleStateChange = (newState: GameState) => {
+    setPrevState(state)
+    setState(newState)
+  }
+
+  const handleUndo = () => {
+    if (prevState) {
+      setState(prevState)
+      setPrevState(null)
+    }
+  }
 
   const handleStart = (names: [string, string, string], gameType: GameType, tsumoRule: TsumoRule) => {
     const initial = createInitialState(gameType, tsumoRule)
@@ -20,15 +33,18 @@ export default function App() {
       isRiichi: false,
     }))
     initial.phase = 'playing'
+    setPrevState(null)
     setState(initial)
   }
 
   const handleEndGame = () => {
+    setPrevState(state)
     setState(prev => ({ ...prev, phase: 'end' }))
   }
 
   const handleRestart = () => {
     clearState()
+    setPrevState(null)
     setState(createInitialState())
   }
 
@@ -43,8 +59,9 @@ export default function App() {
   return (
     <GameBoard
       state={state}
-      onStateChange={setState}
+      onStateChange={handleStateChange}
       onEndGame={handleEndGame}
+      onUndo={prevState ? handleUndo : undefined}
     />
   )
 }
