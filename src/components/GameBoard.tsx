@@ -55,7 +55,7 @@ export function GameBoard({ state, onStateChange, onEndGame }: Props) {
     const deltas = calcAgariDeltas(
       input.han, input.fu, input.winType,
       input.winnerIndex, dealerIndex,
-      input.ronTargetIndex, round.honba, state.kyoutaku,
+      input.ronTargetIndex, round.honba, state.kyoutaku, state.tsumoRule,
     )
     let next = applyDeltas(state, deltas)
     next = advanceAfterAgari(next, input.winnerIndex === dealerIndex, input.riichiIndices)
@@ -146,6 +146,7 @@ export function GameBoard({ state, onStateChange, onEndGame }: Props) {
           dealerIndex={dealerIndex}
           honba={round.honba}
           kyoutaku={kyoutaku}
+          tsumoRule={state.tsumoRule}
           onConfirm={handleAgari}
           onCancel={() => setModal(null)}
         />

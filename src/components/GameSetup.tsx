@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import type { GameType } from '../types/game'
+import type { GameType, TsumoRule } from '../types/game'
 
 interface Props {
-  onStart: (names: [string, string, string], gameType: GameType) => void
+  onStart: (names: [string, string, string], gameType: GameType, tsumoRule: TsumoRule) => void
 }
 
 export function GameSetup({ onStart }: Props) {
@@ -12,6 +12,7 @@ export function GameSetup({ onStart }: Props) {
     'プレイヤー3',
   ])
   const [gameType, setGameType] = useState<GameType>('hanchan')
+  const [tsumoRule, setTsumoRule] = useState<TsumoRule>('loss')
 
   const handleChange = (i: number, value: string) => {
     const next = [...names] as [string, string, string]
@@ -26,7 +27,7 @@ export function GameSetup({ onStart }: Props) {
         <p className="text-center text-slate-400 text-sm mb-8">初期点数 35,000点</p>
 
         {/* 東風 / 半荘 選択 */}
-        <div className="mb-6">
+        <div className="mb-4">
           <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
             ゲーム形式
           </label>
@@ -54,6 +55,35 @@ export function GameSetup({ onStart }: Props) {
           </div>
         </div>
 
+        {/* ツモ損 選択 */}
+        <div className="mb-6">
+          <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+            ツモ損
+          </label>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={() => setTsumoRule('loss')}
+              className={`py-3 rounded-xl font-black text-lg transition-all border-2 ${
+                tsumoRule === 'loss'
+                  ? 'bg-emerald-500 text-white border-emerald-500 shadow-md'
+                  : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-emerald-300'
+              }`}
+            >
+              ツモ損あり
+            </button>
+            <button
+              onClick={() => setTsumoRule('noloss')}
+              className={`py-3 rounded-xl font-black text-lg transition-all border-2 ${
+                tsumoRule === 'noloss'
+                  ? 'bg-emerald-500 text-white border-emerald-500 shadow-md'
+                  : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-emerald-300'
+              }`}
+            >
+              ツモ損なし
+            </button>
+          </div>
+        </div>
+
         <div className="space-y-3 mb-8">
           {names.map((name, i) => (
             <div key={i}>
@@ -72,7 +102,7 @@ export function GameSetup({ onStart }: Props) {
         </div>
 
         <button
-          onClick={() => onStart(names, gameType)}
+          onClick={() => onStart(names, gameType, tsumoRule)}
           className="w-full bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 text-white font-black text-xl py-4 rounded-xl transition-colors shadow-md"
         >
           ゲーム開始

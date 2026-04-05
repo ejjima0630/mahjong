@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import type { AgariInput } from '../types/game'
+import type { AgariInput, TsumoRule } from '../types/game'
 import { FU_OPTIONS, HAN_OPTIONS, calcScorePreview, getScoreLevel, SCORE_LEVEL_LABEL } from '../utils/scoring'
 
 interface Props {
@@ -7,11 +7,12 @@ interface Props {
   dealerIndex: number
   honba: number
   kyoutaku: number
+  tsumoRule: TsumoRule
   onConfirm: (input: AgariInput) => void
   onCancel: () => void
 }
 
-export function AgariModal({ players, dealerIndex, honba, kyoutaku, onConfirm, onCancel }: Props) {
+export function AgariModal({ players, dealerIndex, honba, kyoutaku, tsumoRule, onConfirm, onCancel }: Props) {
   const [winnerIndex, setWinnerIndex] = useState<number | null>(null)
   const [winType, setWinType] = useState<'tsumo' | 'ron'>('tsumo')
   const [ronTargetIndex, setRonTargetIndex] = useState<number | null>(null)
@@ -35,7 +36,7 @@ export function AgariModal({ players, dealerIndex, honba, kyoutaku, onConfirm, o
   const preview = useMemo(() => {
     if (winnerIndex === null) return null
     if (winType === 'ron' && ronTargetIndex === null) return null
-    return calcScorePreview(han, fu, winType, isDealer)
+    return calcScorePreview(han, fu, winType, isDealer, tsumoRule)
   }, [winnerIndex, winType, ronTargetIndex, han, fu, isDealer])
 
   const canConfirm = winnerIndex !== null && (winType === 'tsumo' || ronTargetIndex !== null)

@@ -2,6 +2,8 @@ export type Wind = 'east' | 'south'
 
 export type GameType = 'hanchan' | 'tonpuusen'
 
+export type TsumoRule = 'loss' | 'noloss'
+
 export interface Player {
   name: string
   score: number
@@ -38,6 +40,7 @@ export interface GameState {
   dealerIndex: number
   phase: GamePhase
   gameType: GameType
+  tsumoRule: TsumoRule
 }
 
 export type ScoreLevel =

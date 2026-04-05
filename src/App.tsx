@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import type { GameState, GameType } from './types/game'
+import type { GameState, GameType, TsumoRule } from './types/game'
 import { createInitialState, loadState, saveState, clearState } from './utils/gameLogic'
 import { GameSetup } from './components/GameSetup'
 import { GameBoard } from './components/GameBoard'
@@ -12,8 +12,8 @@ export default function App() {
     saveState(state)
   }, [state])
 
-  const handleStart = (names: [string, string, string], gameType: GameType) => {
-    const initial = createInitialState(gameType)
+  const handleStart = (names: [string, string, string], gameType: GameType, tsumoRule: TsumoRule) => {
+    const initial = createInitialState(gameType, tsumoRule)
     initial.players = names.map(name => ({
       name,
       score: 35000,

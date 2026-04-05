@@ -1,8 +1,8 @@
-import type { GameState, GameType, Round, Wind } from '../types/game'
+import type { GameState, GameType, Round, TsumoRule, Wind } from '../types/game'
 
 export const INITIAL_SCORE = 35000
 
-export function createInitialState(gameType: GameType = 'hanchan'): GameState {
+export function createInitialState(gameType: GameType = 'hanchan', tsumoRule: TsumoRule = 'loss'): GameState {
   return {
     players: [
       { name: 'プレイヤー1', score: INITIAL_SCORE, isRiichi: false },
@@ -14,6 +14,7 @@ export function createInitialState(gameType: GameType = 'hanchan'): GameState {
     dealerIndex: 0,
     phase: 'setup',
     gameType,
+    tsumoRule,
   }
 }
 

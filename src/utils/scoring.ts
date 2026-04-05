@@ -1,4 +1,4 @@
-import type { ScoreLevel } from '../types/game'
+import type { ScoreLevel, TsumoRule } from '../types/game'
 
 const roundUp100 = (n: number) => Math.ceil(n / 100) * 100
 
@@ -24,16 +24,29 @@ const MANGAN_TABLE: Record<ScoreLevel, { koRon: number; oyaRon: number; koTsumoK
   yakuman:   { koRon: 32000, oyaRon: 48000, koTsumoKo: 8000, koTsumoOya: 16000, oyaTsumoKo: 16000 },
 }
 
-function getBasePayments(han: number, fu: number) {
+function getBasePayments(han: number, fu: number, tsumoRule: TsumoRule = 'loss') {
   const level = getScoreLevel(han, fu)
-  if (level !== 'normal') return MANGAN_TABLE[level]
-  const basic = fu * Math.pow(2, han + 2)
+  const basic = level !== 'normal'
+    ? MANGAN_TABLE[level].koRon / 4
+    : fu * Math.pow(2, han + 2)
+  const koRon   = level !== 'normal' ? MANGAN_TABLE[level].koRon  : roundUp100(basic * 4)
+  const oyaRon  = level !== 'normal' ? MANGAN_TABLE[level].oyaRon : roundUp100(basic * 6)
+
+  if (tsumoRule === 'noloss') {
+    return {
+      koRon,
+      oyaRon,
+      koTsumoKo:  roundUp100(basic)     + roundUp100(basic / 2),
+      koTsumoOya: roundUp100(basic * 2) + roundUp100(basic / 2),
+      oyaTsumoKo: roundUp100(basic * 3),
+    }
+  }
   return {
-    koRon:       roundUp100(basic * 4),
-    oyaRon:      roundUp100(basic * 6),
-    koTsumoKo:   roundUp100(basic),
-    koTsumoOya:  roundUp100(basic * 2),
-    oyaTsumoKo:  roundUp100(basic * 2),
+    koRon,
+    oyaRon,
+    koTsumoKo:  roundUp100(basic),
+    koTsumoOya: roundUp100(basic * 2),
+    oyaTsumoKo: roundUp100(basic * 2),
   }
 }
 
@@ -49,9 +62,10 @@ export function calcAgariDeltas(
   ronTargetIndex: number | null,
   honba: number,
   kyoutaku: number,
+  tsumoRule: TsumoRule = 'loss',
 ): number[] {
   const deltas = [0, 0, 0]
-  const base = getBasePayments(han, fu)
+  const base = getBasePayments(han, fu, tsumoRule)
   const isDealer = winnerIndex === dealerIndex
   const others = [0, 1, 2].filter(i => i !== winnerIndex)
 
@@ -111,8 +125,9 @@ export function calcScorePreview(
   fu: number,
   winType: 'tsumo' | 'ron',
   isDealer: boolean,
+  tsumoRule: TsumoRule = 'loss',
 ): string {
-  const base = getBasePayments(han, fu)
+  const base = getBasePayments(han, fu, tsumoRule)
   const level = getScoreLevel(han, fu)
   const levelLabel = level !== 'normal' ? `【${SCORE_LEVEL_LABEL[level]}】` : ''
 
