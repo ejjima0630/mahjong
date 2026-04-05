@@ -60,7 +60,7 @@ export function GameBoard({ state, onStateChange, onEndGame }: Props) {
     let next = applyDeltas(state, deltas)
     next = advanceAfterAgari(next, input.winnerIndex === dealerIndex, input.riichiIndices)
     next.kyoutaku = 0
-    if (isLastRound(state.round) && input.winnerIndex !== dealerIndex) {
+    if (isLastRound(state.round, state.gameType) && input.winnerIndex !== dealerIndex) {
       onStateChange({ ...next, phase: 'end' })
     } else {
       onStateChange(next)
@@ -73,7 +73,7 @@ export function GameBoard({ state, onStateChange, onEndGame }: Props) {
     let next = applyDeltas(state, deltas)
     const dealerTenpai = tenpaiIndices.includes(dealerIndex)
     next = advanceAfterRyuukyoku(next, dealerTenpai)
-    if (isLastRound(state.round) && !dealerTenpai) {
+    if (isLastRound(state.round, state.gameType) && !dealerTenpai) {
       onStateChange({ ...next, phase: 'end' })
     } else {
       onStateChange(next)

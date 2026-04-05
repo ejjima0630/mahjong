@@ -1,5 +1,7 @@
 export type Wind = 'east' | 'south'
 
+export type GameType = 'hanchan' | 'tonpuusen'
+
 export interface Player {
   name: string
   score: number
@@ -35,6 +37,7 @@ export interface GameState {
   kyoutaku: number
   dealerIndex: number
   phase: GamePhase
+  gameType: GameType
 }
 
 export type ScoreLevel =

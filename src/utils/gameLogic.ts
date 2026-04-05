@@ -1,8 +1,8 @@
-import type { GameState, Round, Wind } from '../types/game'
+import type { GameState, GameType, Round, Wind } from '../types/game'
 
 export const INITIAL_SCORE = 35000
 
-export function createInitialState(): GameState {
+export function createInitialState(gameType: GameType = 'hanchan'): GameState {
   return {
     players: [
       { name: 'プレイヤー1', score: INITIAL_SCORE, isRiichi: false },
@@ -13,6 +13,7 @@ export function createInitialState(): GameState {
     kyoutaku: 0,
     dealerIndex: 0,
     phase: 'setup',
+    gameType,
   }
 }
 
@@ -103,7 +104,10 @@ function nextRound(current: Round, honba = 0): Round {
   return { wind: 'south', number: 3, honba: current.honba }
 }
 
-export function isLastRound(round: Round): boolean {
+export function isLastRound(round: Round, gameType: GameType = 'hanchan'): boolean {
+  if (gameType === 'tonpuusen') {
+    return round.wind === 'east' && round.number === 3
+  }
   return round.wind === 'south' && round.number === 3
 }
 
