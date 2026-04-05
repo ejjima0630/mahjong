@@ -126,7 +126,12 @@ export function getRankings(players: { name: string; score: number }[]): number[
 export function loadState(): GameState | null {
   try {
     const saved = localStorage.getItem('mahjong-state')
-    return saved ? JSON.parse(saved) : null
+    if (!saved) return null
+    const state = JSON.parse(saved) as GameState
+    // 古いデータに存在しないフィールドのデフォルト値を補完
+    if (!state.gameType) state.gameType = 'hanchan'
+    if (!state.tsumoRule) state.tsumoRule = 'loss'
+    return state
   } catch {
     return null
   }
