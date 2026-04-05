@@ -30,7 +30,7 @@ export function AgariModal({ players, dealerIndex, honba, kyoutaku, onConfirm, o
   const isDealer = winnerIndex !== null && winnerIndex === dealerIndex
   const level = getScoreLevel(han, fu)
   const levelLabel = level !== 'normal' ? SCORE_LEVEL_LABEL[level] : ''
-  const needsFu = !['mangan', 'haneman', 'baiman', 'sanbaiman', 'yakuman'].includes(level)
+  const needsFu = han <= 4
 
   const preview = useMemo(() => {
     if (winnerIndex === null) return null
