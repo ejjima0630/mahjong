@@ -51,21 +51,19 @@ export function PlayerCard({ name, score, rank, isDealer, isRiichi, canRiichi, o
         </p>
       </div>
 
-      {/* リーチ棒 */}
+      {/* リーチボタン */}
       <button
         onClick={onRiichi}
         disabled={!isRiichi && !canRiichi}
-        className={`w-full transition-all duration-150 rounded-xl ${
-          !isRiichi && !canRiichi
-            ? 'opacity-30 cursor-not-allowed'
-            : 'hover:opacity-80 active:scale-95 cursor-pointer'
+        className={`w-full py-3 rounded-xl font-black text-lg tracking-widest transition-all duration-150 ${
+          isRiichi
+            ? 'bg-red-500 text-white shadow-lg shadow-red-300 scale-[1.02]'
+            : !canRiichi
+            ? 'bg-slate-100 text-slate-300 cursor-not-allowed'
+            : 'bg-slate-100 text-slate-400 hover:bg-slate-200 active:scale-95 cursor-pointer'
         }`}
       >
-        <img
-          src={isRiichi ? '/reach.png' : '/no_reach.png'}
-          alt={isRiichi ? 'リーチ中' : 'ノーリーチ'}
-          className="w-full object-contain"
-        />
+        リーチ
       </button>
     </div>
   )
