@@ -90,11 +90,17 @@ export function GameBoard({ state, onStateChange, onEndGame, onUndo }: Props) {
 
       {/* ヘッダー */}
       <div className="flex items-center justify-between bg-green-800 rounded-xl px-5 py-3">
-        <div className="text-white">
+        <div className="text-white flex items-center gap-3">
           <span className="text-2xl font-bold">{windLabel}{round.number}局</span>
           {round.honba > 0 && (
-            <span className="ml-3 text-lg opacity-80">{round.honba}本場</span>
+            <span className="text-lg opacity-80">{round.honba}本場</span>
           )}
+          <span className="text-sm bg-white/20 rounded px-2 py-0.5">
+            {state.gameType === 'hanchan' ? '半荘' : '東風'}
+          </span>
+          <span className="text-sm bg-white/20 rounded px-2 py-0.5">
+            ツモ損{state.tsumoRule === 'loss' ? 'あり' : 'なし'}
+          </span>
         </div>
         {kyoutaku > 0 && (
           <span className="bg-yellow-600 text-white px-3 py-1 rounded-lg font-bold text-sm">
