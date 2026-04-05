@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@keyframes delta-fade {
+  0%   { opacity: 0; transform: translateY(4px) scale(0.85); }
+  15%  { opacity: 1; transform: translateY(-4px) scale(1.1); }
+  60%  { opacity: 1; transform: translateY(-10px) scale(1); }
+  100% { opacity: 0; transform: translateY(-22px) scale(0.9); }
+}
+
+.animate-delta-fade {
+  animation: delta-fade 2s ease-out forwards;
+  pointer-events: none;
+}
