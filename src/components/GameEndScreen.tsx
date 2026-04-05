@@ -1,7 +1,9 @@
+import type { GameType } from '../types/game'
 import { getRankings } from '../utils/gameLogic'
 
 interface Props {
   players: { name: string; score: number }[]
+  gameType: GameType
   onRestart: () => void
 }
 
@@ -11,7 +13,7 @@ const RANK_CONFIG = [
   { emoji: '🥉', bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-500' },
 ]
 
-export function GameEndScreen({ players, onRestart }: Props) {
+export function GameEndScreen({ players, gameType, onRestart }: Props) {
   const rankings = getRankings(players)
   const sorted = players
     .map((p, i) => ({ ...p, rank: rankings[i] }))
@@ -20,7 +22,7 @@ export function GameEndScreen({ players, onRestart }: Props) {
   return (
     <div className="h-screen bg-slate-100 flex items-center justify-center p-6">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
-        <h2 className="text-3xl font-black text-center text-slate-800 mb-1">半荘終了</h2>
+        <h2 className="text-3xl font-black text-center text-slate-800 mb-1">{gameType === 'hanchan' ? '半荘' : '東風'}終了</h2>
         <p className="text-center text-slate-400 text-sm mb-8">最終結果</p>
 
         <div className="space-y-3 mb-8">

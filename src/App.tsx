@@ -53,7 +53,7 @@ export default function App() {
   }
 
   if (state.phase === 'end') {
-    return <GameEndScreen players={state.players} onRestart={handleRestart} />
+    return <GameEndScreen players={state.players} gameType={state.gameType} onRestart={handleRestart} />
   }
 
   return (
