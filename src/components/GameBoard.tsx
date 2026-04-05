@@ -11,8 +11,9 @@ import {
 import { AgariModal } from './AgariModal'
 import { RyuukyokuModal } from './RyuukyokuModal'
 import { PlayerCard } from './PlayerCard'
+import { ScoreTableModal } from './ScoreTableModal'
 
-type Modal = 'agari' | 'ryuukyoku' | null
+type Modal = 'agari' | 'ryuukyoku' | 'scoreTable' | null
 
 interface Props {
   state: GameState
@@ -99,12 +100,20 @@ export function GameBoard({ state, onStateChange, onEndGame }: Props) {
             供託 {kyoutaku}本 ({(kyoutaku * 1000).toLocaleString()}点)
           </span>
         )}
-        <button
-          onClick={onEndGame}
-          className="text-white/60 hover:text-white text-sm border border-white/30 rounded-lg px-3 py-1 transition-colors"
-        >
-          終了
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setModal('scoreTable')}
+            className="text-white/60 hover:text-white text-sm border border-white/30 rounded-lg px-3 py-1 transition-colors"
+          >
+            点数表
+          </button>
+          <button
+            onClick={onEndGame}
+            className="text-white/60 hover:text-white text-sm border border-white/30 rounded-lg px-3 py-1 transition-colors"
+          >
+            終了
+          </button>
+        </div>
       </div>
 
       {/* プレイヤーカード */}
@@ -149,6 +158,12 @@ export function GameBoard({ state, onStateChange, onEndGame }: Props) {
           tsumoRule={state.tsumoRule}
           onConfirm={handleAgari}
           onCancel={() => setModal(null)}
+        />
+      )}
+      {modal === 'scoreTable' && (
+        <ScoreTableModal
+          tsumoRule={state.tsumoRule}
+          onClose={() => setModal(null)}
         />
       )}
       {modal === 'ryuukyoku' && (
