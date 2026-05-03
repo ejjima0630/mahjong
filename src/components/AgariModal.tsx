@@ -12,6 +12,30 @@ interface Props {
   onCancel: () => void
 }
 
+function selBtn(active: boolean, activeColor = 'var(--c-text)'): React.CSSProperties {
+  return {
+    padding: '0.75rem 0.25rem',
+    background: active ? 'var(--c-surface2)' : 'none',
+    color: active ? activeColor : 'var(--c-dim)',
+    border: `1px solid ${active ? activeColor : 'var(--c-border)'}`,
+    borderRadius: '6px',
+    fontSize: '1rem',
+    fontWeight: 700,
+    cursor: 'pointer',
+    fontFamily: 'inherit',
+    transition: 'all 0.1s',
+    letterSpacing: '0.03em',
+  }
+}
+
+const sectionLabel: React.CSSProperties = {
+  fontSize: '0.8rem',
+  letterSpacing: '0.12em',
+  color: 'var(--c-dim)',
+  marginBottom: '0.625rem',
+  display: 'block',
+}
+
 export function AgariModal({ players, dealerIndex, honba, kyoutaku, tsumoRule, onConfirm, onCancel }: Props) {
   const [winnerIndex, setWinnerIndex] = useState<number | null>(null)
   const [winType, setWinType] = useState<'tsumo' | 'ron'>('tsumo')
@@ -29,15 +53,13 @@ export function AgariModal({ players, dealerIndex, honba, kyoutaku, tsumoRule, o
   }
 
   const isDealer = winnerIndex !== null && winnerIndex === dealerIndex
-  const level = getScoreLevel(han, fu)
-  const levelLabel = level !== 'normal' ? SCORE_LEVEL_LABEL[level] : ''
   const needsFu = han <= 4
 
   const preview = useMemo(() => {
     if (winnerIndex === null) return null
     if (winType === 'ron' && ronTargetIndex === null) return null
     return calcScorePreview(han, fu, winType, isDealer, tsumoRule)
-  }, [winnerIndex, winType, ronTargetIndex, han, fu, isDealer])
+  }, [winnerIndex, winType, ronTargetIndex, han, fu, isDealer, tsumoRule])
 
   const canConfirm = winnerIndex !== null && (winType === 'tsumo' || ronTargetIndex !== null)
 
@@ -47,32 +69,40 @@ export function AgariModal({ players, dealerIndex, honba, kyoutaku, tsumoRule, o
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[95vh] overflow-y-auto">
+    <div style={{
+      position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.35)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: '1rem',
+    }}>
+      <div style={{
+        background: 'var(--c-bg)',
+        backgroundImage: 'none',
+        width: '100%', maxWidth: '540px',
+        maxHeight: '92vh', overflowY: 'auto',
+        border: '1px solid var(--c-border)',
+        borderRadius: '12px',
+      }}>
 
-        {/* ヘッダー */}
-        <div className="px-6 py-4 border-b border-slate-100">
-          <h2 className="text-2xl font-black text-slate-800">アガリ入力</h2>
+        <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid var(--c-border)' }}>
+          <h2 style={{ fontSize: '1.375rem', fontWeight: 700, letterSpacing: '0.08em', color: 'var(--c-text)' }}>
+            アガリ入力
+          </h2>
           {(honba > 0 || kyoutaku > 0) && (
-            <p className="text-sm text-slate-400 mt-0.5">
-              {honba > 0 && `${honba}本場 `}{kyoutaku > 0 && `供託${kyoutaku}本`}
+            <p style={{ fontSize: '0.875rem', color: 'var(--c-dim)', marginTop: '0.25rem' }}>
+              {honba > 0 && `${honba}本場　`}{kyoutaku > 0 && `供託${kyoutaku}本`}
             </p>
           )}
         </div>
 
-        <div className="p-5 space-y-5">
+        <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+
           {/* アガリ者 */}
           <section>
-            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">アガリ者</h3>
-            <div className="grid grid-cols-3 gap-2">
+            <span style={sectionLabel}>アガリ者</span>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
               {players.map((p, i) => (
                 <button key={i} onClick={() => setWinnerIndex(i)}
-                  className={`py-3 rounded-xl font-bold text-sm transition-all border-2 ${
-                    winnerIndex === i
-                      ? 'bg-emerald-500 text-white border-emerald-500 shadow-md'
-                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-emerald-300'
-                  }`}>
-                  {i === dealerIndex ? '🎴 ' : ''}{p.name}
+                  style={selBtn(winnerIndex === i, 'var(--c-accent)')}>
+                  {i === dealerIndex ? '◆ ' : ''}{p.name}
                 </button>
               ))}
             </div>
@@ -80,15 +110,11 @@ export function AgariModal({ players, dealerIndex, honba, kyoutaku, tsumoRule, o
 
           {/* ツモ / ロン */}
           <section>
-            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">アガリ種類</h3>
-            <div className="grid grid-cols-2 gap-2">
+            <span style={sectionLabel}>アガリ種類</span>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
               {(['tsumo', 'ron'] as const).map(t => (
                 <button key={t} onClick={() => setWinType(t)}
-                  className={`py-3 rounded-xl font-black text-xl transition-all border-2 ${
-                    winType === t
-                      ? 'bg-blue-500 text-white border-blue-500 shadow-md'
-                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-blue-300'
-                  }`}>
+                  style={{ ...selBtn(winType === t), fontSize: '1.25rem', padding: '0.875rem' }}>
                   {t === 'tsumo' ? 'ツモ' : 'ロン'}
                 </button>
               ))}
@@ -98,18 +124,14 @@ export function AgariModal({ players, dealerIndex, honba, kyoutaku, tsumoRule, o
           {/* 振込者 */}
           {winType === 'ron' && (
             <section>
-              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">振込者</h3>
-              <div className="grid grid-cols-3 gap-2">
+              <span style={sectionLabel}>振込者</span>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
                 {players.map((p, i) => {
                   if (i === winnerIndex) return <div key={i} />
                   return (
                     <button key={i} onClick={() => setRonTargetIndex(i)}
-                      className={`py-3 rounded-xl font-bold text-sm transition-all border-2 ${
-                        ronTargetIndex === i
-                          ? 'bg-red-500 text-white border-red-500 shadow-md'
-                          : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-red-300'
-                      }`}>
-                      {i === dealerIndex ? '🎴 ' : ''}{p.name}
+                      style={selBtn(ronTargetIndex === i, 'var(--c-red)')}>
+                      {i === dealerIndex ? '◆ ' : ''}{p.name}
                     </button>
                   )
                 })}
@@ -119,20 +141,13 @@ export function AgariModal({ players, dealerIndex, honba, kyoutaku, tsumoRule, o
 
           {/* 翻数 */}
           <section>
-            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+            <span style={sectionLabel}>
               翻数
-              {levelLabel && (
-                <span className="ml-2 text-emerald-600 normal-case font-black">【{levelLabel}】</span>
-              )}
-            </h3>
-            <div className="flex flex-wrap gap-2">
+            </span>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
               {HAN_OPTIONS.map(h => (
                 <button key={h} onClick={() => setHan(h)}
-                  className={`w-12 h-12 rounded-xl font-bold text-sm transition-all border-2 ${
-                    han === h
-                      ? 'bg-emerald-500 text-white border-emerald-500 shadow-md'
-                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-emerald-300'
-                  }`}>
+                  style={{ ...selBtn(han === h), width: '3.75rem', height: '3.5rem', padding: 0, fontSize: '0.9rem' }}>
                   {h}翻
                 </button>
               ))}
@@ -142,15 +157,11 @@ export function AgariModal({ players, dealerIndex, honba, kyoutaku, tsumoRule, o
           {/* 符数 */}
           {needsFu && (
             <section>
-              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">符数</h3>
-              <div className="flex flex-wrap gap-2">
+              <span style={sectionLabel}>符数</span>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                 {FU_OPTIONS.map(f => (
                   <button key={f} onClick={() => setFu(f)}
-                    className={`w-14 h-12 rounded-xl font-bold text-sm transition-all border-2 ${
-                      fu === f
-                        ? 'bg-blue-500 text-white border-blue-500 shadow-md'
-                        : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-blue-300'
-                    }`}>
+                    style={{ ...selBtn(fu === f), width: '4rem', height: '3.5rem', padding: 0, fontSize: '0.9rem' }}>
                     {f}符
                   </button>
                 ))}
@@ -160,15 +171,11 @@ export function AgariModal({ players, dealerIndex, honba, kyoutaku, tsumoRule, o
 
           {/* リーチ */}
           <section>
-            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">リーチしていた人</h3>
-            <div className="grid grid-cols-3 gap-2">
+            <span style={sectionLabel}>リーチしていた人</span>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
               {players.map((p, i) => (
                 <button key={i} onClick={() => toggleRiichi(i)}
-                  className={`py-2 rounded-xl text-sm font-bold transition-all border-2 ${
-                    riichiIndices.includes(i)
-                      ? 'bg-amber-400 text-white border-amber-400 shadow-md'
-                      : 'bg-slate-50 text-slate-500 border-slate-200 hover:border-amber-300'
-                  }`}>
+                  style={selBtn(riichiIndices.includes(i), 'var(--c-accent)')}>
                   {p.name}
                 </button>
               ))}
@@ -177,30 +184,55 @@ export function AgariModal({ players, dealerIndex, honba, kyoutaku, tsumoRule, o
 
           {/* プレビュー */}
           {preview && (
-            <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-center">
-              <p className="text-emerald-800 font-black text-xl">{preview}</p>
+            <div style={{
+              border: '1px solid var(--c-border)',
+              borderRadius: '6px',
+              padding: '1.125rem',
+              textAlign: 'center',
+              background: 'var(--c-surface)',
+            }}>
+              <p className="mono" style={{ fontSize: '1.625rem', fontWeight: 700, color: 'var(--c-text)' }}>
+                {preview}
+              </p>
               {(honba > 0 || kyoutaku > 0) && (
-                <p className="text-emerald-600 text-sm mt-1">
-                  {honba > 0 && `+本場 ${(honba * 200).toLocaleString()}点`}
+                <p style={{ fontSize: '0.875rem', color: 'var(--c-dim)', marginTop: '0.25rem' }}>
+                  {honba > 0 && `+本場 ${(honba * 200).toLocaleString()}`}
                   {honba > 0 && kyoutaku > 0 && '　'}
-                  {kyoutaku > 0 && `+供託 ${(kyoutaku * 1000).toLocaleString()}点`}
+                  {kyoutaku > 0 && `+供託 ${(kyoutaku * 1000).toLocaleString()}`}
                 </p>
               )}
             </div>
           )}
 
           {/* ボタン */}
-          <div className="grid grid-cols-2 gap-3 pt-1">
-            <button onClick={onCancel}
-              className="py-4 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '0.625rem' }}>
+            <button onClick={onCancel} style={{
+              padding: '1.125rem',
+              background: 'none',
+              color: 'var(--c-dim)',
+              border: '1px solid var(--c-border)',
+              borderRadius: '8px',
+              fontWeight: 700,
+              fontSize: '1rem',
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+              letterSpacing: '0.05em',
+            }}>
               キャンセル
             </button>
-            <button onClick={handleConfirm} disabled={!canConfirm}
-              className={`py-4 rounded-xl font-bold text-white transition-all ${
-                canConfirm
-                  ? 'bg-emerald-500 hover:bg-emerald-400 shadow-md'
-                  : 'bg-slate-200 text-slate-400 cursor-not-allowed'
-              }`}>
+            <button onClick={handleConfirm} disabled={!canConfirm} style={{
+              padding: '1.125rem',
+              background: canConfirm ? 'var(--c-accent)' : 'var(--c-surface2)',
+              color: canConfirm ? '#fff' : 'var(--c-muted)',
+              border: 'none',
+              borderRadius: '8px',
+              fontWeight: 900,
+              fontSize: '1.125rem',
+              cursor: canConfirm ? 'pointer' : 'not-allowed',
+              fontFamily: 'inherit',
+              letterSpacing: '0.08em',
+              transition: 'opacity 0.15s',
+            }}>
               確定
             </button>
           </div>

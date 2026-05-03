@@ -25,36 +25,54 @@ export function RyuukyokuModal({ players, dealerIndex, onConfirm, onCancel }: Pr
   if (tenpaiCount > 0 && tenpaiCount < 3) {
     const notenPay = Math.round(3000 / notenCount)
     const tenpaiGain = Math.round(3000 / tenpaiCount)
-    paymentDesc = `ノーテン ${notenPay.toLocaleString()}点 → テンパイ ${tenpaiGain.toLocaleString()}点`
+    paymentDesc = `ノーテン ${notenPay.toLocaleString()} → テンパイ +${tenpaiGain.toLocaleString()}`
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+    <div style={{
+      position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: '1rem',
+    }}>
+      <div style={{
+        background: 'var(--c-bg)',
+        width: '100%', maxWidth: '440px',
+        border: '1px solid var(--c-border)',
+        borderRadius: '12px',
+      }}>
 
-        <div className="px-6 py-4 border-b border-slate-100">
-          <h2 className="text-2xl font-black text-slate-800">流局</h2>
+        <div style={{ padding: '1.125rem 1.5rem', borderBottom: '1px solid var(--c-border)' }}>
+          <h2 style={{ fontSize: '1.125rem', fontWeight: 700, letterSpacing: '0.1em', color: 'var(--c-text)' }}>
+            流局
+          </h2>
         </div>
 
-        <div className="p-5 space-y-5">
+        <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+
           <section>
-            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">テンパイ / ノーテン</h3>
-            <div className="grid grid-cols-3 gap-3">
+            <span style={{ fontSize: '0.7rem', letterSpacing: '0.15em', color: 'var(--c-dim)', marginBottom: '0.625rem', display: 'block' }}>
+              テンパイ / ノーテン
+            </span>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
               {players.map((p, i) => {
                 const isTenpai = tenpaiIndices.includes(i)
                 const isRiichi = p.isRiichi
                 return (
                   <button key={i} onClick={() => toggle(i)}
-                    className={`py-4 rounded-xl font-bold text-sm transition-all border-2 ${
-                      isRiichi
-                        ? 'bg-amber-400 text-white border-amber-400 cursor-default'
-                        : isTenpai
-                        ? 'bg-blue-500 text-white border-blue-500 shadow-md'
-                        : 'bg-slate-50 text-slate-500 border-slate-200 hover:border-blue-300'
-                    }`}>
-                    {i === dealerIndex ? '🎴 ' : ''}{p.name}
+                    style={{
+                      padding: '0.875rem 0.25rem',
+                      background: isRiichi || isTenpai ? 'var(--c-surface2)' : 'none',
+                      color: isRiichi ? 'var(--c-accent)' : isTenpai ? 'var(--c-text)' : 'var(--c-dim)',
+                      border: `1px solid ${isRiichi ? 'var(--c-accent)' : isTenpai ? 'var(--c-text)' : 'var(--c-border)'}`,
+                      borderRadius: '6px',
+                      fontSize: '0.9rem',
+                      fontWeight: 700,
+                      cursor: isRiichi ? 'default' : 'pointer',
+                      fontFamily: 'inherit',
+                      lineHeight: 1.5,
+                    }}>
+                    {i === dealerIndex ? '◆ ' : ''}{p.name}
                     <br />
-                    <span className="text-xs font-normal">
+                    <span style={{ fontSize: '0.7rem', fontWeight: 400, opacity: 0.75 }}>
                       {isRiichi ? 'リーチ' : isTenpai ? 'テンパイ' : 'ノーテン'}
                     </span>
                   </button>
@@ -63,21 +81,45 @@ export function RyuukyokuModal({ players, dealerIndex, onConfirm, onCancel }: Pr
             </div>
           </section>
 
-          <div className={`rounded-xl p-3 text-center border ${
-            tenpaiCount > 0 && tenpaiCount < 3
-              ? 'bg-blue-50 border-blue-200 text-blue-800'
-              : 'bg-slate-50 border-slate-200 text-slate-500'
-          }`}>
-            <p className="font-bold">{paymentDesc}</p>
+          <div style={{
+            border: '1px solid var(--c-border)',
+            borderRadius: '6px',
+            padding: '0.875rem',
+            textAlign: 'center',
+            background: tenpaiCount > 0 && tenpaiCount < 3 ? 'var(--c-surface)' : 'none',
+          }}>
+            <p className="mono" style={{ fontSize: '0.9rem', color: tenpaiCount > 0 && tenpaiCount < 3 ? 'var(--c-text)' : 'var(--c-dim)' }}>
+              {paymentDesc}
+            </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <button onClick={onCancel}
-              className="py-4 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.625rem' }}>
+            <button onClick={onCancel} style={{
+              padding: '1rem',
+              background: 'none',
+              color: 'var(--c-dim)',
+              border: '1px solid var(--c-border)',
+              borderRadius: '8px',
+              fontWeight: 700,
+              fontSize: '0.9rem',
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+              letterSpacing: '0.05em',
+            }}>
               キャンセル
             </button>
-            <button onClick={() => onConfirm(tenpaiIndices)}
-              className="py-4 rounded-xl font-bold text-white bg-slate-600 hover:bg-slate-500 transition-colors shadow-md">
+            <button onClick={() => onConfirm(tenpaiIndices)} style={{
+              padding: '1rem',
+              background: 'var(--c-text)',
+              color: 'var(--c-bg)',
+              border: 'none',
+              borderRadius: '8px',
+              fontWeight: 900,
+              fontSize: '0.9rem',
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+              letterSpacing: '0.05em',
+            }}>
               確定
             </button>
           </div>

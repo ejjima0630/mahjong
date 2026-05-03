@@ -129,16 +129,14 @@ export function calcScorePreview(
 ): string {
   const base = getBasePayments(han, fu, tsumoRule)
   const level = getScoreLevel(han, fu)
-  const levelLabel = level !== 'normal' ? `【${SCORE_LEVEL_LABEL[level]}】` : ''
-
   if (winType === 'ron') {
     const total = isDealer ? base.oyaRon : base.koRon
-    return `${levelLabel} ロン ${total.toLocaleString()}点`
+    return `${total.toLocaleString()}点`
   } else {
     if (isDealer) {
-      return `${levelLabel} ツモ ${base.oyaTsumoKo.toLocaleString()}点オール`
+      return `${base.oyaTsumoKo.toLocaleString()}点オール`
     } else {
-      return `${levelLabel} ツモ ${base.koTsumoKo.toLocaleString()}/${base.koTsumoOya.toLocaleString()}点`
+      return `${base.koTsumoKo.toLocaleString()} / ${base.koTsumoOya.toLocaleString()}点`
     }
   }
 }

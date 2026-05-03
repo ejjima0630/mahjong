@@ -5,12 +5,28 @@ interface Props {
   onStart: (names: [string, string, string], gameType: GameType, tsumoRule: TsumoRule) => void
 }
 
+function tabBtn(active: boolean): React.CSSProperties {
+  return {
+    flex: 1,
+    paddingTop: '0.5rem',
+    paddingBottom: '0.875rem',
+    marginBottom: '-1px',
+    fontSize: '1.25rem',
+    fontWeight: 700,
+    textAlign: 'left',
+    background: 'none',
+    border: 'none',
+    borderBottom: active ? '2px solid var(--c-accent)' : '2px solid transparent',
+    color: active ? 'var(--c-text)' : 'var(--c-muted)',
+    cursor: 'pointer',
+    letterSpacing: '0.03em',
+    transition: 'color 0.15s',
+    fontFamily: 'inherit',
+  }
+}
+
 export function GameSetup({ onStart }: Props) {
-  const [names, setNames] = useState<[string, string, string]>([
-    'プレイヤー1',
-    'プレイヤー2',
-    'プレイヤー3',
-  ])
+  const [names, setNames] = useState<[string, string, string]>(['プレイヤー1', 'プレイヤー2', 'プレイヤー3'])
   const [gameType, setGameType] = useState<GameType>('hanchan')
   const [tsumoRule, setTsumoRule] = useState<TsumoRule>('loss')
 
@@ -21,81 +37,69 @@ export function GameSetup({ onStart }: Props) {
   }
 
   return (
-    <div className="h-screen bg-slate-100 flex items-center justify-center p-6">
-      <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
-        <h1 className="text-3xl font-black text-center text-slate-800 mb-1">三麻点数管理</h1>
-        <p className="text-center text-slate-400 text-sm mb-8">初期点数 35,000点</p>
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '2rem',
+    }}>
+      <div style={{ width: '100%', maxWidth: '440px', background: 'var(--c-surface)', padding: '2.5rem', border: '1px solid var(--c-border)', borderRadius: '12px' }}>
 
-        {/* 東風 / 半荘 選択 */}
-        <div className="mb-4">
-          <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
-            ゲーム形式
-          </label>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={() => setGameType('tonpuusen')}
-              className={`py-3 rounded-xl font-black text-lg transition-all border-2 ${
-                gameType === 'tonpuusen'
-                  ? 'bg-emerald-500 text-white border-emerald-500 shadow-md'
-                  : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-emerald-300'
-              }`}
-            >
-              東風戦
-            </button>
-            <button
-              onClick={() => setGameType('hanchan')}
-              className={`py-3 rounded-xl font-black text-lg transition-all border-2 ${
-                gameType === 'hanchan'
-                  ? 'bg-emerald-500 text-white border-emerald-500 shadow-md'
-                  : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-emerald-300'
-              }`}
-            >
-              半荘戦
-            </button>
+        <div style={{ marginBottom: '3rem' }}>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '0.2em', color: 'var(--c-text)' }}>
+            三麻点数管理
+          </h1>
+          <p style={{ fontSize: '0.875rem', color: 'var(--c-dim)', marginTop: '0.375rem' }}>
+            初期点数 35,000
+          </p>
+        </div>
+
+        <div>
+          <p style={{ fontSize: '0.8rem', letterSpacing: '0.12em', color: 'var(--c-dim)', marginBottom: '0.75rem' }}>ゲーム形式</p>
+          <div style={{ display: 'flex', borderBottom: '1px solid var(--c-border)', marginBottom: '2rem' }}>
+            {(['tonpuusen', 'hanchan'] as const).map(type => (
+              <button key={type} onClick={() => setGameType(type)} style={tabBtn(gameType === type)}>
+                {type === 'tonpuusen' ? '東風戦' : '半荘戦'}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* ツモ損 選択 */}
-        <div className="mb-6">
-          <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
-            ツモ損
-          </label>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={() => setTsumoRule('loss')}
-              className={`py-3 rounded-xl font-black text-lg transition-all border-2 ${
-                tsumoRule === 'loss'
-                  ? 'bg-emerald-500 text-white border-emerald-500 shadow-md'
-                  : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-emerald-300'
-              }`}
-            >
-              ツモ損あり
-            </button>
-            <button
-              onClick={() => setTsumoRule('noloss')}
-              className={`py-3 rounded-xl font-black text-lg transition-all border-2 ${
-                tsumoRule === 'noloss'
-                  ? 'bg-emerald-500 text-white border-emerald-500 shadow-md'
-                  : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-emerald-300'
-              }`}
-            >
-              ツモ損なし
-            </button>
+        <div>
+          <p style={{ fontSize: '0.8rem', letterSpacing: '0.12em', color: 'var(--c-dim)', marginBottom: '0.75rem' }}>ツモ損</p>
+          <div style={{ display: 'flex', borderBottom: '1px solid var(--c-border)', marginBottom: '2.25rem' }}>
+            {([['loss', 'ツモ損あり'], ['noloss', 'ツモ損なし']] as const).map(([rule, label]) => (
+              <button key={rule} onClick={() => setTsumoRule(rule)} style={tabBtn(tsumoRule === rule)}>
+                {label}
+              </button>
+            ))}
           </div>
         </div>
 
-        <div className="space-y-3 mb-8">
+        <div style={{ marginBottom: '3rem' }}>
+          <p style={{ fontSize: '0.8rem', letterSpacing: '0.12em', color: 'var(--c-dim)', marginBottom: '0.75rem' }}>プレイヤー</p>
           {names.map((name, i) => (
-            <div key={i}>
-              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
-                プレイヤー {i + 1}
-              </label>
+            <div key={i} style={{ display: 'flex', alignItems: 'baseline', gap: '1rem', borderBottom: '1px solid var(--c-border)', marginBottom: '0.75rem' }}>
+              <span style={{ fontSize: '0.875rem', color: 'var(--c-muted)', minWidth: '1.25rem', fontFamily: "'Roboto', sans-serif", fontWeight: 700 }}>
+                {i + 1}
+              </span>
               <input
                 type="text"
                 value={name}
                 onChange={e => handleChange(i, e.target.value)}
-                className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 text-lg font-bold text-slate-800 focus:outline-none focus:border-emerald-400 transition-colors"
                 placeholder={`プレイヤー${i + 1}`}
+                style={{
+                  flex: 1,
+                  background: 'none',
+                  border: 'none',
+                  outline: 'none',
+                  color: 'var(--c-text)',
+                  fontSize: '1.25rem',
+                  fontWeight: 700,
+                  padding: '0.75rem 0',
+                  fontFamily: 'inherit',
+                }}
               />
             </div>
           ))}
@@ -103,10 +107,26 @@ export function GameSetup({ onStart }: Props) {
 
         <button
           onClick={() => onStart(names, gameType, tsumoRule)}
-          className="w-full bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 text-white font-black text-xl py-4 rounded-xl transition-colors shadow-md"
+          style={{
+            width: '100%',
+            padding: '1.25rem',
+            background: 'var(--c-accent)',
+            color: '#fff',
+            fontWeight: 900,
+            fontSize: '1.125rem',
+            letterSpacing: '0.18em',
+            cursor: 'pointer',
+            border: 'none',
+            borderRadius: '8px',
+            fontFamily: 'inherit',
+            transition: 'opacity 0.15s',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
+          onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
         >
           ゲーム開始
         </button>
+
       </div>
     </div>
   )

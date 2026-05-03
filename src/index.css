@@ -1,4 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Roboto:wght@400;700;900&display=swap');
 @import "tailwindcss";
+
+:root {
+  --c-bg: #f4efe6;
+  --c-surface: #ebe4d8;
+  --c-surface2: #e0d9cc;
+  --c-border: #c8bfb0;
+  --c-text: #1e1a14;
+  --c-dim: #7a7268;
+  --c-muted: #b8b0a4;
+  --c-accent: #8b5e32;
+  --c-red: #b83232;
+  --c-pos: #3a7a52;
+}
+
+body {
+  background-color: var(--c-bg);
+  background-image: radial-gradient(circle, rgba(155,140,120,0.18) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: var(--c-text);
+  font-family: 'Noto Sans JP', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.mono {
+  font-family: 'Roboto', sans-serif;
+  font-variant-numeric: tabular-nums;
+}
 
 @keyframes delta-fade {
   0%   { opacity: 0; transform: translateY(4px) scale(0.85); }
@@ -10,4 +38,8 @@
 .animate-delta-fade {
   animation: delta-fade 2s ease-out forwards;
   pointer-events: none;
+}
+
+input::placeholder {
+  color: var(--c-muted);
 }

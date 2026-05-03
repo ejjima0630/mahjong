@@ -10,58 +10,91 @@ interface Props {
   onRiichi: () => void
 }
 
-const RANK_COLORS = ['text-yellow-400', 'text-gray-300', 'text-orange-400']
-
 export function PlayerCard({ name, score, rank, isDealer, isRiichi, canRiichi, onRiichi }: Props) {
   const { displayScore, delta } = useAnimatedScore(score)
 
   return (
-    <div className={`bg-white rounded-2xl p-4 flex flex-col gap-3 ${
-      isDealer ? 'ring-4 ring-yellow-400' : ''
-    }`}>
-      {/* 名前・親マーク・順位 */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="font-bold text-gray-800 text-lg">{name}</span>
-          {isDealer && (
-            <span className="bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-0.5 rounded-full">
-              親
-            </span>
-          )}
-        </div>
-        <span className={`text-3xl font-black ${RANK_COLORS[rank - 1]}`}>{rank}位</span>
+    <div style={{
+      background: rank === 1 ? 'rgba(156,107,46,0.08)' : 'var(--c-surface)',
+      borderTop: isDealer ? '3px solid var(--c-accent)' : '3px solid transparent',
+      borderLeft: isRiichi ? '4px solid var(--c-red)' : '4px solid transparent',
+      borderRadius: '8px',
+      padding: '1.25rem 1rem',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '0.875rem',
+    }}>
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{
+          fontSize: '1.375rem',
+          fontWeight: 700,
+          color: isDealer ? 'var(--c-accent)' : 'var(--c-text)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.4rem',
+        }}>
+          {isDealer && <span style={{ fontSize: '0.9rem', color: 'var(--c-accent)' }}>◆</span>}
+          {name}
+        </span>
+        <span className="mono" style={{
+          fontSize: '1rem',
+          fontWeight: 700,
+          color: rank === 1 ? 'var(--c-accent)' : 'var(--c-muted)',
+        }}>
+          {rank}位
+        </span>
       </div>
 
-      {/* 点数 */}
-      <div className="text-center relative py-2">
+      <div style={{ position: 'relative', textAlign: 'center', padding: '0.75rem 0' }}>
         {delta !== null && (
           <span
             key={score}
-            className={`absolute inset-x-0 -top-3 text-xl font-black animate-delta-fade ${
-              delta > 0 ? 'text-emerald-500' : 'text-red-500'
-            }`}
+            className="animate-delta-fade"
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              top: '-0.25rem',
+              textAlign: 'center',
+              fontSize: '1.375rem',
+              fontWeight: 700,
+              color: delta > 0 ? 'var(--c-pos)' : 'var(--c-red)',
+              fontFamily: "'Roboto', sans-serif",
+            }}
           >
             {delta > 0 ? '+' : ''}{delta.toLocaleString()}
           </span>
         )}
-        <p className={`text-4xl font-black tabular-nums ${
-          displayScore < 0 ? 'text-red-600' : 'text-gray-900'
-        }`}>
+        <p className="mono" style={{
+          fontSize: '3.5rem',
+          fontWeight: 500,
+          color: displayScore < 0 ? 'var(--c-red)' : 'var(--c-text)',
+          lineHeight: 1,
+          letterSpacing: '-0.02em',
+        }}>
           {displayScore.toLocaleString()}
         </p>
       </div>
 
-      {/* リーチボタン */}
       <button
         onClick={onRiichi}
         disabled={!isRiichi && !canRiichi}
-        className={`w-full py-3 rounded-xl font-black text-lg tracking-widest transition-all duration-150 ${
-          isRiichi
-            ? 'bg-red-500 text-white shadow-lg shadow-red-300 scale-[1.02]'
-            : !canRiichi
-            ? 'bg-slate-100 text-slate-300 cursor-not-allowed'
-            : 'bg-slate-100 text-slate-400 hover:bg-slate-200 active:scale-95 cursor-pointer'
-        }`}
+        style={{
+          width: '100%',
+          padding: '0.75rem',
+          background: isRiichi ? 'var(--c-red)' : 'none',
+          color: isRiichi ? '#fff' : canRiichi ? 'var(--c-dim)' : 'var(--c-muted)',
+          border: `1px solid ${isRiichi ? 'var(--c-red)' : 'var(--c-border)'}`,
+          borderRadius: '6px',
+          fontSize: '1rem',
+          fontWeight: 700,
+          letterSpacing: '0.2em',
+          cursor: !isRiichi && !canRiichi ? 'not-allowed' : 'pointer',
+          opacity: !isRiichi && !canRiichi ? 0.4 : 1,
+          fontFamily: 'inherit',
+          transition: 'all 0.15s',
+        }}
       >
         リーチ
       </button>

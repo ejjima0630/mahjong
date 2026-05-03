@@ -28,12 +28,8 @@ function getCellKo(han: number, fu: number, tsumoRule: TsumoRule) {
   const level = getScoreLevel(han, fu)
   const basic = level !== 'normal' ? 2000 : fu * Math.pow(2, han + 2)
   const ron = level !== 'normal' ? 8000 : R(basic * 4)
-  const tsumoD = tsumoRule === 'noloss'
-    ? R(basic * 2) + R(basic / 2)
-    : R(basic * 2)
-  const tsumoK = tsumoRule === 'noloss'
-    ? R(basic) + R(basic / 2)
-    : R(basic)
+  const tsumoD = tsumoRule === 'noloss' ? R(basic * 2) + R(basic / 2) : R(basic * 2)
+  const tsumoK = tsumoRule === 'noloss' ? R(basic) + R(basic / 2) : R(basic)
   return { ron, tsumoD, tsumoK, isMangan: level !== 'normal', isTsumoOnly: fu === 20 }
 }
 
@@ -50,63 +46,104 @@ export function ScoreTableModal({ tsumoRule, onClose }: Props) {
   const [winnerType, setWinnerType] = useState<WinnerType>('ko')
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
+    <div style={{
+      position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: '1rem',
+    }}>
+      <div style={{
+        background: 'var(--c-surface)',
+        width: '100%', maxWidth: '680px',
+        maxHeight: '88vh',
+        border: '1px solid var(--c-border)',
+        borderRadius: '12px',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+      }}>
 
-        {/* ヘッダー */}
-        <div className="px-5 py-3 border-b border-slate-100 flex items-center justify-between">
-          <h2 className="text-xl font-black text-slate-800">点数表</h2>
-          <div className="flex items-center gap-3">
-            <div className="flex bg-slate-100 rounded-xl p-1 gap-1">
+        <div style={{
+          padding: '0.875rem 1.25rem',
+          borderBottom: '1px solid var(--c-border)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}>
+          <h2 style={{ fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.15em', color: 'var(--c-text)' }}>
+            点数表
+          </h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ display: 'flex', gap: '0', border: '1px solid var(--c-border)' }}>
               {(['ko', 'oya'] as const).map(t => (
-                <button
-                  key={t}
-                  onClick={() => setWinnerType(t)}
-                  className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all ${
-                    winnerType === t ? 'bg-white shadow text-slate-800' : 'text-slate-500 hover:text-slate-700'
-                  }`}
-                >
-                  {t === 'ko' ? '子アガリ' : '親アガリ'}
+                <button key={t} onClick={() => setWinnerType(t)} style={{
+                  padding: '0.3rem 0.875rem',
+                  fontSize: '0.7rem',
+                  fontWeight: 700,
+                  background: winnerType === t ? 'var(--c-text)' : 'none',
+                  color: winnerType === t ? 'var(--c-bg)' : 'var(--c-dim)',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                  letterSpacing: '0.05em',
+                  transition: 'all 0.1s',
+                }}>
+                  {t === 'ko' ? '子' : '親'}
                 </button>
               ))}
             </div>
-            <button onClick={onClose} className="text-slate-400 hover:text-slate-600 text-xl font-bold w-8 h-8 flex items-center justify-center">
+            <button onClick={onClose} style={{
+              background: 'none',
+              border: '1px solid var(--c-border)',
+              borderRadius: '6px',
+              color: 'var(--c-dim)',
+              width: '1.75rem',
+              height: '1.75rem',
+              cursor: 'pointer',
+              fontSize: '0.75rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
               ✕
             </button>
           </div>
         </div>
 
-        {/* テーブル */}
-        <div className="overflow-auto flex-1">
-          <table className="w-full text-sm border-collapse">
+        <div style={{ overflowY: 'auto', flex: 1 }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.75rem' }}>
             <thead>
-              <tr className="bg-slate-50 sticky top-0">
-                <th className="border border-slate-200 px-2 py-2 text-slate-500 text-xs font-bold">符</th>
+              <tr style={{ position: 'sticky', top: 0, background: 'var(--c-surface2)' }}>
+                <th style={{ padding: '0.5rem 0.625rem', borderBottom: '1px solid var(--c-border)', color: 'var(--c-dim)', fontWeight: 700, textAlign: 'center', fontSize: '0.65rem' }}>符</th>
                 {HAN_LIST.map(h => (
-                  <th key={h} className="border border-slate-200 px-2 py-2 text-slate-700 font-bold">{h}翻</th>
+                  <th key={h} style={{ padding: '0.5rem 0.625rem', borderBottom: '1px solid var(--c-border)', color: 'var(--c-text)', fontWeight: 700, textAlign: 'center' }}>
+                    {h}翻
+                  </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {FU_LIST.map(fu => (
-                <tr key={fu} className="hover:bg-slate-50">
-                  <td className="border border-slate-200 px-2 py-2 text-center font-bold text-slate-500 text-xs bg-slate-50 whitespace-nowrap">
+              {FU_LIST.map((fu, rowIdx) => (
+                <tr key={fu} style={{ background: rowIdx % 2 === 0 ? 'none' : 'var(--c-surface2)' }}>
+                  <td style={{ padding: '0.5rem 0.625rem', borderBottom: '1px solid var(--c-border)', color: 'var(--c-dim)', fontWeight: 700, textAlign: 'center', fontSize: '0.65rem', whiteSpace: 'nowrap' }}>
                     {fu}符
                   </td>
                   {HAN_LIST.map(han => {
                     if (winnerType === 'ko') {
                       const cell = getCellKo(han, fu, tsumoRule)
                       if (!cell) return (
-                        <td key={han} className="border border-slate-200 px-2 py-2 text-center text-slate-300 text-xs">—</td>
+                        <td key={han} style={{ padding: '0.5rem 0.625rem', borderBottom: '1px solid var(--c-border)', textAlign: 'center', color: 'var(--c-muted)' }}>—</td>
                       )
                       return (
-                        <td key={han} className={`border border-slate-200 px-2 py-1.5 text-center ${cell.isMangan ? 'bg-emerald-50' : ''}`}>
-                          {cell.isMangan && <div className="text-xs font-bold text-emerald-600">満貫</div>}
+                        <td key={han} style={{ padding: '0.4rem 0.5rem', borderBottom: '1px solid var(--c-border)', textAlign: 'center' }}>
+                          {cell.isMangan && (
+                            <div style={{ fontSize: '0.55rem', color: 'var(--c-accent)', marginBottom: '0.1rem' }}>満貫</div>
+                          )}
                           {!cell.isTsumoOnly
-                            ? <div className={`font-bold ${cell.isMangan ? 'text-emerald-700' : 'text-slate-800'}`}>{fmt(cell.ron)}</div>
-                            : <div className="text-xs text-slate-400">ツモのみ</div>
+                            ? <div className="mono" style={{ fontWeight: 700, color: cell.isMangan ? 'var(--c-accent)' : 'var(--c-text)' }}>
+                                {fmt(cell.ron)}
+                              </div>
+                            : <div style={{ fontSize: '0.6rem', color: 'var(--c-muted)' }}>ツモのみ</div>
                           }
-                          <div className="text-xs text-slate-500 mt-0.5">
+                          <div className="mono" style={{ fontSize: '0.6rem', color: 'var(--c-dim)', marginTop: '0.1rem' }}>
                             親{fmt(cell.tsumoD)}/子{fmt(cell.tsumoK)}
                           </div>
                         </td>
@@ -114,16 +151,22 @@ export function ScoreTableModal({ tsumoRule, onClose }: Props) {
                     } else {
                       const cell = getCellOya(han, fu, tsumoRule)
                       if (!cell) return (
-                        <td key={han} className="border border-slate-200 px-2 py-2 text-center text-slate-300 text-xs">—</td>
+                        <td key={han} style={{ padding: '0.5rem 0.625rem', borderBottom: '1px solid var(--c-border)', textAlign: 'center', color: 'var(--c-muted)' }}>—</td>
                       )
                       return (
-                        <td key={han} className={`border border-slate-200 px-2 py-1.5 text-center ${cell.isMangan ? 'bg-emerald-50' : ''}`}>
-                          {cell.isMangan && <div className="text-xs font-bold text-emerald-600">満貫</div>}
+                        <td key={han} style={{ padding: '0.4rem 0.5rem', borderBottom: '1px solid var(--c-border)', textAlign: 'center' }}>
+                          {cell.isMangan && (
+                            <div style={{ fontSize: '0.55rem', color: 'var(--c-accent)', marginBottom: '0.1rem' }}>満貫</div>
+                          )}
                           {!cell.isTsumoOnly
-                            ? <div className={`font-bold ${cell.isMangan ? 'text-emerald-700' : 'text-slate-800'}`}>{fmt(cell.ron)}</div>
-                            : <div className="text-xs text-slate-400">ツモのみ</div>
+                            ? <div className="mono" style={{ fontWeight: 700, color: cell.isMangan ? 'var(--c-accent)' : 'var(--c-text)' }}>
+                                {fmt(cell.ron)}
+                              </div>
+                            : <div style={{ fontSize: '0.6rem', color: 'var(--c-muted)' }}>ツモのみ</div>
                           }
-                          <div className="text-xs text-slate-500 mt-0.5">各{fmt(cell.tsumoK)}</div>
+                          <div className="mono" style={{ fontSize: '0.6rem', color: 'var(--c-dim)', marginTop: '0.1rem' }}>
+                            各{fmt(cell.tsumoK)}
+                          </div>
                         </td>
                       )
                     }
@@ -134,9 +177,11 @@ export function ScoreTableModal({ tsumoRule, onClose }: Props) {
           </table>
 
           {/* 5翻以上 */}
-          <div className="p-4 border-t border-slate-100">
-            <div className="text-xs font-bold text-slate-400 mb-3">5翻以上</div>
-            <div className="grid grid-cols-5 gap-2">
+          <div style={{ padding: '1rem 1.25rem', borderTop: '1px solid var(--c-border)' }}>
+            <div style={{ fontSize: '0.6rem', letterSpacing: '0.15em', color: 'var(--c-dim)', marginBottom: '0.75rem' }}>
+              5翻以上
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.375rem' }}>
               {MANGAN_LEVELS.map(level => {
                 const ron = winnerType === 'ko' ? level.koRon : level.oyaRon
                 const basic = level.koRon / 4
@@ -150,10 +195,21 @@ export function ScoreTableModal({ tsumoRule, onClose }: Props) {
                   tsumoLine = `各${fmt(each)}`
                 }
                 return (
-                  <div key={level.label} className="bg-emerald-50 rounded-xl p-3 text-center border border-emerald-200">
-                    <div className="text-xs font-bold text-emerald-600 mb-1">{level.label}</div>
-                    <div className="font-black text-emerald-700 text-base">{fmt(ron)}</div>
-                    <div className="text-xs text-slate-500 mt-1">{tsumoLine}</div>
+                  <div key={level.label} style={{
+                    border: '1px solid var(--c-border)',
+                    padding: '0.625rem',
+                    textAlign: 'center',
+                    background: 'var(--c-surface2)',
+                  }}>
+                    <div style={{ fontSize: '0.6rem', color: 'var(--c-accent)', marginBottom: '0.25rem', letterSpacing: '0.05em' }}>
+                      {level.label}
+                    </div>
+                    <div className="mono" style={{ fontWeight: 700, color: 'var(--c-text)', fontSize: '0.875rem' }}>
+                      {fmt(ron)}
+                    </div>
+                    <div className="mono" style={{ fontSize: '0.55rem', color: 'var(--c-dim)', marginTop: '0.25rem' }}>
+                      {tsumoLine}
+                    </div>
                   </div>
                 )
               })}

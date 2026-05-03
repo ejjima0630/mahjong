@@ -22,6 +22,18 @@ interface Props {
   onUndo?: () => void
 }
 
+const ghostBtn: React.CSSProperties = {
+  fontSize: '1rem',
+  color: 'var(--c-dim)',
+  background: 'none',
+  border: '1px solid var(--c-border)',
+  padding: '0.5rem 1rem',
+  cursor: 'pointer',
+  fontFamily: 'inherit',
+  letterSpacing: '0.05em',
+  transition: 'color 0.15s',
+}
+
 export function GameBoard({ state, onStateChange, onEndGame, onUndo }: Props) {
   const [modal, setModal] = useState<Modal>(null)
   const { players, round, kyoutaku, dealerIndex } = state
@@ -86,53 +98,58 @@ export function GameBoard({ state, onStateChange, onEndGame, onUndo }: Props) {
   const windLabel = round.wind === 'east' ? '東' : '南'
 
   return (
-    <div className="min-h-screen bg-green-900 flex flex-col p-4 gap-4">
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      padding: '1rem',
+      gap: '1rem',
+    }}>
 
       {/* ヘッダー */}
-      <div className="flex items-center justify-between bg-green-800 rounded-xl px-5 py-3">
-        <div className="text-white flex items-center gap-3">
-          <span className="text-2xl font-bold">{windLabel}{round.number}局</span>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        background: 'var(--c-surface)',
+        padding: '0.875rem 1.25rem',
+        borderBottom: '2px solid var(--c-border)',
+        borderRadius: '8px',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '1.25rem' }}>
+          <span className="mono" style={{ fontSize: '2.5rem', fontWeight: 700, color: 'var(--c-text)', letterSpacing: '-0.01em' }}>
+            {windLabel}{round.number}局
+          </span>
           {round.honba > 0 && (
-            <span className="text-lg opacity-80">{round.honba}本場</span>
+            <span style={{ fontSize: '1.125rem', color: 'var(--c-dim)', fontWeight: 500 }}>{round.honba}本場</span>
           )}
-          <span className="text-sm bg-white/20 rounded px-2 py-0.5">
+          <span style={{ fontSize: '0.875rem', color: 'var(--c-muted)' }}>
             {state.gameType === 'hanchan' ? '半荘' : '東風'}
           </span>
-          <span className="text-sm bg-white/20 rounded px-2 py-0.5">
+          <span style={{ fontSize: '0.875rem', color: 'var(--c-muted)' }}>
             ツモ損{state.tsumoRule === 'loss' ? 'あり' : 'なし'}
           </span>
         </div>
+
         {kyoutaku > 0 && (
-          <span className="bg-yellow-600 text-white px-3 py-1 rounded-lg font-bold text-sm">
-            供託 {kyoutaku}本 ({(kyoutaku * 1000).toLocaleString()}点)
+          <span className="mono" style={{ fontSize: '1.125rem', color: 'var(--c-accent)', fontWeight: 700 }}>
+            供託 {(kyoutaku * 1000).toLocaleString()}
           </span>
         )}
-        <div className="flex gap-2">
-          <button
-            onClick={() => setModal('scoreTable')}
-            className="text-white/60 hover:text-white text-sm border border-white/30 rounded-lg px-3 py-1 transition-colors"
-          >
-            点数表
-          </button>
+
+        <div style={{ display: 'flex', gap: '0.625rem' }}>
+          <button onClick={() => setModal('scoreTable')} style={ghostBtn}>点数表</button>
           {onUndo && (
-            <button
-              onClick={onUndo}
-              className="text-yellow-300 hover:text-yellow-100 text-sm border border-yellow-400/50 rounded-lg px-3 py-1 transition-colors"
-            >
+            <button onClick={onUndo} style={{ ...ghostBtn, color: 'var(--c-accent)', borderColor: 'var(--c-accent)' }}>
               やり直し
             </button>
           )}
-          <button
-            onClick={onEndGame}
-            className="text-white/60 hover:text-white text-sm border border-white/30 rounded-lg px-3 py-1 transition-colors"
-          >
-            終了
-          </button>
+          <button onClick={onEndGame} style={ghostBtn}>終了</button>
         </div>
       </div>
 
       {/* プレイヤーカード */}
-      <div className="grid grid-cols-3 gap-3 flex-1">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.875rem', flex: 1 }}>
         {players.map((player, i) => (
           <PlayerCard
             key={i}
@@ -148,22 +165,49 @@ export function GameBoard({ state, onStateChange, onEndGame, onUndo }: Props) {
       </div>
 
       {/* アクションボタン */}
-      <div className="grid grid-cols-2 gap-3">
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
         <button
           onClick={() => setModal('agari')}
-          className="bg-green-500 hover:bg-green-400 text-white font-black text-2xl py-6 rounded-2xl shadow-lg transition-colors"
+          style={{
+            padding: '1.625rem',
+            background: 'var(--c-accent)',
+            color: '#fff',
+            fontWeight: 900,
+            fontSize: '1.75rem',
+            letterSpacing: '0.15em',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+            transition: 'opacity 0.15s',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
+          onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
         >
           アガリ
         </button>
         <button
           onClick={() => setModal('ryuukyoku')}
-          className="bg-gray-500 hover:bg-gray-400 text-white font-black text-2xl py-6 rounded-2xl shadow-lg transition-colors"
+          style={{
+            padding: '1.625rem',
+            background: 'none',
+            color: 'var(--c-dim)',
+            fontWeight: 700,
+            fontSize: '1.375rem',
+            letterSpacing: '0.08em',
+            border: '1px solid var(--c-border)',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+            transition: 'color 0.15s',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.color = 'var(--c-text)')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'var(--c-dim)')}
         >
-          流　局
+          流局
         </button>
       </div>
 
-      {/* モーダル */}
       {modal === 'agari' && (
         <AgariModal
           players={players}
@@ -176,10 +220,7 @@ export function GameBoard({ state, onStateChange, onEndGame, onUndo }: Props) {
         />
       )}
       {modal === 'scoreTable' && (
-        <ScoreTableModal
-          tsumoRule={state.tsumoRule}
-          onClose={() => setModal(null)}
-        />
+        <ScoreTableModal tsumoRule={state.tsumoRule} onClose={() => setModal(null)} />
       )}
       {modal === 'ryuukyoku' && (
         <RyuukyokuModal
